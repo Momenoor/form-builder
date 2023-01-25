@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
 
 
-# Laravel 5 Form Builder
+# Laravel 9 Form Builder
 
 Based on laravel-form-builder (https://github.com/kristijanhusak/laravel-form-builder). 
 I add default no editable form and few complex form fields.
