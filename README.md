@@ -41,7 +41,7 @@ I add the validation system directly in the form part.
 6. [Controller](#controller)
 7. [Troubleshooting](#troubleshooting)
 
-##Installation
+#Installation
 
 Add on your composer.json
 
