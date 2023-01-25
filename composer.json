@@ -12,7 +12,7 @@
     "php": "8.1.0",
     "illuminate/support": "^9.0",
     "illuminate/filesystem": "^9.0",
-    "kris/laravel-form-builder": "1.6.12",
+    "kris/laravel-form-builder": "1.*",
     "cloudinary/cloudinary_php": "dev-master"
   },
   "require-dev": {
