@@ -64,7 +64,7 @@ class FormValidator extends FormView {
 
     // ------------------------------------------------------------------------------------------------
 
-    public function validate()
+    public function validate($rules = [] , $messages = [])
     {
         if ($this->validation == null)
         {
@@ -134,14 +134,14 @@ class FormValidator extends FormView {
             [
                 'label' => trans('form-builder::form.save'),
                 'attr'  => [
-                    'class' => 'btn green'
+                    'class' => 'btn btn-success'
                 ],
             ], false, true)
             ->add('back', 'button',
                 [
                     'label' => trans('form-builder::form.back'),
                     'attr'  => [
-                        'class'   => 'btn default',
+                        'class'   => 'btn btn-light',
                         'onclick' => 'window.history.back()'
                     ],
                 ], false, true);
@@ -150,7 +150,7 @@ class FormValidator extends FormView {
 
     // ------------------------------------------------------------------------------------------------
 
-    protected function getRules()
+    public function getRules($overrideRules = [])
     {
         $key = !empty($this->model) ? $this->formHelper->getRequest()->get($this->model->getKeyName()) : null;
 

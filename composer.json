@@ -1,39 +1,41 @@
 {
-  "name": "momenoor/form-builder",
-  "description": "Based on laravel-form-builder (https://github.com/kristijanhusak/laravel-form-builder). That add default component and add view system.",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Momen Noor",
-      "email": "momen.noor@gmail.com"
-    }
-  ],
-  "require": {
-    "php": "8.1.0",
-    "illuminate/support": "^9.0",
-    "illuminate/filesystem": "^9.0",
-    "kris/laravel-form-builder": "1.*",
-    "cloudinary/cloudinary_php": "dev-master"
-  },
-  "require-dev": {
-    "orchestra/database": "3.8.*",
-    "orchestra/testbench": "3.8.*",
-    "orchestra/testbench-browser-kit": "3.8.*",
-    "phpunit/phpunit": "~7.0",
-    "mockery/mockery": "~1.0",
-    "fzaninotto/faker": "~1.4"
-  },
-  "autoload": {
-    "classmap": [
-      "tests"
+    "name": "momenoor/form-builder",
+    "description": "Based on laravel-form-builder (https://github.com/kristijanhusak/laravel-form-builder). That add default component and add view system.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Momen Noor",
+            "email": "momen.noor@gmail.com"
+        }
     ],
-    "psr-4": {
-      "Momenoor\\FormBuilder\\": "src/Momenoor/FormBuilder"
+    "require": {
+        "php": "8.1.0",
+        "illuminate/support": "^9.0",
+        "illuminate/filesystem": "^9.0",
+        "kris/laravel-form-builder": "1.*",
+        "cloudinary/cloudinary_php": "dev-master"
     },
-    "files": [
-      "src/helpers.php"
-    ]
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "autoload": {
+        "classmap": [
+            "tests"
+        ],
+        "psr-4": {
+            "Momenoor\\FormBuilder\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Momenoor\\LaravelFormBuilder\\FormBuilderServiceProvider"
+            ],
+            "aliases": {
+                "FormBuilder": "Momenoor\\LaravelFormBuilder\\Facades\\FormBuilder"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

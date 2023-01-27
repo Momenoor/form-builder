@@ -15,13 +15,13 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
     {
         parent::boot();
 
-        $this->loadViewsFrom(__DIR__ . '/../../views', 'form-builder');
-        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'form-builder');
+        $this->loadViewsFrom(__DIR__ . '/views', 'form-builder');
+        $this->loadTranslationsFrom(__DIR__ . '/lang', 'form-builder');
 
-        $this->publishes([__DIR__ . '/../../config/config.php' => config_path('form-builder.php')]);
-        $this->publishes([__DIR__ . '/../../views' => base_path('resources/views/vendor/form-builder')], 'views');
+        $this->publishes([__DIR__ . '/config/config.php' => config_path('form-builder.php')]);
+        $this->publishes([__DIR__ . '/views' => base_path('resources/views/vendor/form-builder')], 'views');
 
-        $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'form-builder');
+        $this->mergeConfigFrom(__DIR__ . '/config/config.php', 'form-builder');
         $this->registerCloudinaryConfig();
     }
 
@@ -32,15 +32,15 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
         $this->registerHtmlIfNeeded();
         $this->registerFormIfHeeded();
 
-        $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'laravel-form-builder');
+        $this->mergeConfigFrom(__DIR__ . '/config/config.php', 'laravel-form-builder');
 
         $this->registerFormHelper();
 
         $this->app->singleton('laravel-form-builder', function ($app) {
-            return new FormBuilder($app, $app['laravel-form-helper']);
+            return new FormBuilder($app, $app['laravel-form-helper'], $app['events']);
         });
 
-        $this->commands(\Distilleries\FormBuilder\Console\FormMakeCommand::class);
+        $this->commands(\Momenoor\FormBuilder\Console\FormMakeCommand::class);
 
         $this->alias();
     }
@@ -49,7 +49,7 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
     {
         $this->app->singleton('laravel-form-helper', function ($app) {
             $config = $app['config']->get('form-builder');
-            return new FormHelper($app['view'], $app['request'], $config);
+            return new FormHelper($app['view'], $app['translator'], $config);
         });
 
         $this->app->alias('laravel-form-helper', 'Kris\LaravelFormBuilder\FormHelper');
@@ -57,7 +57,7 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
 
     private function registerHtmlIfNeeded()
     {
-        if (! $this->app->offsetExists('html')) {
+        if (!$this->app->offsetExists('html')) {
             $this->app->singleton('html', function ($app) {
                 return new LaravelHtml($app['url'], $app['view']);
             });
@@ -68,7 +68,7 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
 
     private function registerFormIfHeeded()
     {
-        if (! $this->app->offsetExists('form')) {
+        if (!$this->app->offsetExists('form')) {
             $this->app->singleton('form', function ($app) {
                 $form = new LaravelForm($app['html'], $app['url'], $app['view'], $app['session.store']->token());
                 return $form->setSessionStore($app['session.store']);
@@ -89,7 +89,7 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
 
     private function registerAliasIfNotExists($alias, $class)
     {
-        if (! array_key_exists($alias, AliasLoader::getInstance()->getAliases())) {
+        if (!array_key_exists($alias, AliasLoader::getInstance()->getAliases())) {
             AliasLoader::getInstance()->alias($alias, $class);
         }
     }
@@ -99,7 +99,7 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
         if (config('form-builder.cloudinary.enabled', false)) {
             \Cloudinary::config([
                 'cloud_name' => config('form-builder.cloudinary.cloud_name'),
-                'api_key'    => config('form-builder.cloudinary.api_key'),
+                'api_key' => config('form-builder.cloudinary.api_key'),
                 'api_secret' => config('form-builder.cloudinary.api_secret'),
             ]);
         }
