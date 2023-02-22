@@ -13,7 +13,16 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
 {
     public function boot()
     {
-        parent::boot();
+        $form = $this->app['form'];
+
+        $form->macro('customLabel', function($name, $value, $options = [], $escape_html = true) use ($form) {
+            if (isset($options['for']) && $for = $options['for']) {
+                unset($options['for']);
+                return $form->label($for, $value, $options, $escape_html);
+            }
+
+            return $form->label($name, $value, $options, $escape_html);
+        });
 
         $this->loadViewsFrom(__DIR__ . '/views', 'form-builder');
         $this->loadTranslationsFrom(__DIR__ . '/lang', 'form-builder');
@@ -53,6 +62,11 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
         });
 
         $this->app->alias('laravel-form-helper', 'Kris\LaravelFormBuilder\FormHelper');
+    }
+
+    public function provides()
+    {
+        return ['laravel-form-builder'];
     }
 
     private function registerHtmlIfNeeded()

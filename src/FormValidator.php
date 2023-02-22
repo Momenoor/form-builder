@@ -1,11 +1,15 @@
-<?php namespace Momenoor\FormBuilder;
+<?php
+namespace Momenoor\FormBuilder;
 
+use Closure;
 use \Validator;
 use \Redirect;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
-class FormValidator extends FormView {
+class FormValidator extends FormView
+{
 
+    public $rows = [];
     public static $rules = [];
     public static $rules_update = null;
 
@@ -15,8 +19,33 @@ class FormValidator extends FormView {
     protected $validation = null;
     protected $formOptions = [
         'method' => 'POST',
-        'url'    => null,
+        'url' => null,
     ];
+
+
+    // ------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------
+
+    /**
+     * @param string $name
+     * @param string $type
+     * @param array $options
+     * @param bool $modify
+     * @param bool $noOveride
+     * @return $this
+     */
+
+    public function addRow($name, $options = [], $callback)
+    {
+        $row = new FormRow($name, $options = [], $this->formHelper, $this);
+        if ($callback instanceof Closure) {
+            $callback($row);
+        }
+
+        $this->rows[$name] = $row;
+        return $this;
+    }
 
     // ------------------------------------------------------------------------------------------------
     // ------------------------------------------------------------------------------------------------
@@ -33,21 +62,18 @@ class FormValidator extends FormView {
     public function add($name, $type = 'text', array $options = [], $modify = false, $noOveride = false)
     {
 
-        $defaultClass = $this->formHelper->getConfig('defaults.field_class').' ';
-        if (empty($options['attr']['class']))
-        {
+        $defaultClass = $this->formHelper->getConfig('defaults.field_class') . ' ';
+        if (empty($options['attr']['class'])) {
             $options['attr']['class'] = '';
         }
 
-        if (empty($noOveride))
-        {
-            $options['attr']['class'] = $defaultClass.' '.$options['attr']['class'].' ';
+        if (empty($noOveride)) {
+            $options['attr']['class'] = $defaultClass . ' ' . $options['attr']['class'] . ' ';
         }
 
-        if (!empty($options) && isset($options['validation']))
-        {
+        if (!empty($options) && isset($options['validation'])) {
 
-            $options['attr']['class'] .= ' validate['.$options['validation'].']'.' ';
+            $options['attr']['class'] .= ' validate[' . $options['validation'] . ']' . ' ';
             unset($options['validation']);
         }
 
@@ -64,23 +90,19 @@ class FormValidator extends FormView {
 
     // ------------------------------------------------------------------------------------------------
 
-    public function validate($rules = [] , $messages = [])
+    public function validate($rules = [], $messages = [])
     {
-        if ($this->validation == null)
-        {
+        if ($this->validation == null) {
 
             $fields = $this->getFields();
 
-            foreach ($fields as $field)
-            {
-                if ($field->getType() == 'form')
-                {
+            foreach ($fields as $field) {
+                if ($field->getType() == 'form') {
 
-                    $validation = Validator::make($this->formHelper->getRequest()->get($field->getName(),[]), $field->getClass()->getRules());
+                    $validation = Validator::make($this->formHelper->getRequest()->get($field->getName(), []), $field->getClass()->getRules());
 
-                    if ($validation->fails())
-                    {
-                        $this->hasError   = true;
+                    if ($validation->fails()) {
+                        $this->hasError = true;
                         $this->validation = $validation;
 
                         return $this->validation;
@@ -94,8 +116,7 @@ class FormValidator extends FormView {
                 $this->afterValidate($validator, $this->formHelper->getRequest()->all());
             });
 
-            if ($validation->fails())
-            {
+            if ($validation->fails()) {
                 $this->hasError = true;
             }
 
@@ -117,8 +138,7 @@ class FormValidator extends FormView {
     public function hasError()
     {
 
-        if ($this->validation == null)
-        {
+        if ($this->validation == null) {
             $this->validate();
         }
 
@@ -130,21 +150,31 @@ class FormValidator extends FormView {
 
     public function addDefaultActions()
     {
-        $this->add('submit', 'submit',
+        $this->add(
+            'submit',
+            'submit',
             [
                 'label' => trans('form-builder::form.save'),
-                'attr'  => [
+                'attr' => [
                     'class' => 'btn btn-success'
                 ],
-            ], false, true)
-            ->add('back', 'button',
+            ],
+            false,
+            true
+        )
+            ->add(
+                'back',
+                'button',
                 [
                     'label' => trans('form-builder::form.back'),
-                    'attr'  => [
-                        'class'   => 'btn btn-light',
+                    'attr' => [
+                        'class' => 'btn btn-light',
                         'onclick' => 'window.history.back()'
                     ],
-                ], false, true);
+                ],
+                false,
+                true
+            );
 
     }
 
@@ -172,4 +202,10 @@ class FormValidator extends FormView {
 
         return static::$rules_update;
     }
+
+    public function hasRows()
+    {
+        return (count($this->rows) > 0);
+    }
+
 }
