@@ -1,7 +1,7 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
 
-class ChoiceAreaAjax extends FormFieldsView
+class ChoiceAreaAjax extends FormField
 {
     protected function getTemplate()
     {

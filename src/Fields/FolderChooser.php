@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class FolderChooser extends FormFieldsView {
+class FolderChooser extends FormField {
 
     protected function getTemplate()
     {

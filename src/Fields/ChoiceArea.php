@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class ChoiceArea extends FormFieldsView {
+class ChoiceArea extends FormField {
 
     protected function getTemplate()
     {

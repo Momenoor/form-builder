@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class AddressPicker extends FormFieldsView {
+class AddressPicker extends FormField {
 
     protected function getTemplate()
     {

@@ -2,7 +2,7 @@
 
 namespace Momenoor\FormBuilder\Fields;
 
-class Tag extends FormFieldsView
+class Tag extends FormField
 {
     protected function getTemplate()
     {

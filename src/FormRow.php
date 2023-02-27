@@ -1,7 +1,7 @@
 <?php
 namespace Momenoor\FormBuilder;
 
-use Kris\LaravelFormBuilder\FormHelper;
+use Momenoor\FormBuilder\FormHelper;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 

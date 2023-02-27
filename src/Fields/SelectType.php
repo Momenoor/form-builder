@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class SelectType extends FormFieldsView
+class SelectType extends FormField
 {
 
     protected function getTemplate()

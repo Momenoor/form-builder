@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class ButtonType extends FormFieldsView
+class ButtonType extends FormField
 {
     protected function getTemplate()
     {

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 trait FormStateTrait {
 
     /**
-     * @var \Kris\LaravelFormBuilder\Form $form
+     * @var \Momenoor\FormBuilder\Form $form
      * Injected by the constructor
      */
     protected $form;

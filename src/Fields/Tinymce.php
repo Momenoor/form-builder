@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class Tinymce extends FormFieldsView {
+class Tinymce extends FormField {
 
     protected function getTemplate()
     {

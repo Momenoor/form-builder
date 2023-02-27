@@ -2,15 +2,20 @@
 
 namespace Momenoor\FormBuilder;
 
+use Illuminate\Support\ServiceProvider;
 use Collective\Html\FormBuilder as LaravelForm;
 use Collective\Html\HtmlBuilder as LaravelHtml;
 use Illuminate\Foundation\AliasLoader;
-use Kris\LaravelFormBuilder\FormBuilder;
-use Kris\LaravelFormBuilder\FormBuilderServiceProvider as BaseFormBuilderServiceProvider;
-use Kris\LaravelFormBuilder\FormHelper;
+use InvalidArgumentException;
+use Momenoor\FormBuilder\FormBuilder;
+use Momenoor\FormBuilder\FormHelper;
 
-class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
+class FormBuilderServiceProvider extends ServiceProvider
 {
+    protected const HTML_ABSTRACT = 'html';
+    protected const FORM_ABSTRACT = 'form';
+    protected const BUILDER_ABSTRACT = 'laravel-form-builder';
+    protected const HELPER_ABSTRACT = 'laravel-form-helper';
     public function boot()
     {
         $form = $this->app['form'];
@@ -36,7 +41,7 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
 
     public function register()
     {
-        $this->commands(\Kris\LaravelFormBuilder\Console\FormMakeCommand::class);
+        $this->commands(\Momenoor\FormBuilder\Console\FormMakeCommand::class);
 
         $this->registerHtmlIfNeeded();
         $this->registerFormIfHeeded();
@@ -54,14 +59,43 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
         $this->alias();
     }
 
+    protected function registerFormBuilder()
+    {
+        $abstract = static::BUILDER_ABSTRACT;
+
+        $formBuilderClass = $this->getFormBuilderClass();
+
+        $this->app->singleton($abstract, function ($app) use ($formBuilderClass) {
+            $formBuilder = new $formBuilderClass($app, $app[static::HELPER_ABSTRACT], $app['events']);
+            $formBuilder->setFormClass($this->getPlainFormClass());
+            return $formBuilder;
+        });
+
+        $this->app->alias($abstract, $formBuilderClass);
+        if ($formBuilderClass != FormBuilder::class) {
+            $this->app->alias($abstract, FormBuilder::class);
+        }
+
+        $this->app->afterResolving(Form::class, function ($object, $app) use ($abstract) {
+            $request = $app->make('request');
+
+            if (in_array(ValidatesWhenResolved::class, class_uses($object), true) && $request->method() !== 'GET') {
+                $form = $app->make($abstract)->setDependenciesAndOptions($object);
+                $form->buildForm();
+                $form->redirectIfNotValid();
+            }
+        });
+    }
+
     protected function registerFormHelper()
     {
-        $this->app->singleton('laravel-form-helper', function ($app) {
+        $abstract = static::HELPER_ABSTRACT;
+        $this->app->singleton($abstract, function ($app) {
             $config = $app['config']->get('form-builder');
             return new FormHelper($app['view'], $app['translator'], $config);
         });
 
-        $this->app->alias('laravel-form-helper', 'Kris\LaravelFormBuilder\FormHelper');
+        $this->app->alias($abstract, FormHelper::class);
     }
 
     public function provides()
@@ -117,5 +151,51 @@ class FormBuilderServiceProvider extends BaseFormBuilderServiceProvider
                 'api_secret' => config('form-builder.cloudinary.api_secret'),
             ]);
         }
+    }
+    protected function getPlainFormClass()
+    {
+        return $this->app['config']->get('laravel-form-builder.plain_form_class', Form::class);
+    }
+
+    /**
+     * @return class-string
+     */
+    protected function getFormBuilderClass()
+    {
+        $expectedClass = FormBuilder::class;
+        $defaultClass = FormBuilder::class;
+
+        $class = $this->app['config']->get('laravel-form-builder.form_builder_class', $defaultClass);
+
+        if (!class_exists($class)) {
+            throw new InvalidArgumentException("Class {$class} does not exist");
+        }
+
+        if ($class !== $expectedClass && !is_subclass_of($class, $expectedClass)) {
+            throw new InvalidArgumentException("Class {$class} must extend " . $expectedClass);
+        }
+
+        return $class;
+    }
+
+    /**
+     * @return class-string
+     */
+    protected function getFormHelperClass()
+    {
+        $expectedClass = FormHelper::class;
+        $defaultClass = FormHelper::class;
+
+        $class = $this->app['config']->get('laravel-form-builder.form_helper_class', $defaultClass);
+
+        if (!class_exists($class)) {
+            throw new InvalidArgumentException("Class {$class} does not exist");
+        }
+
+        if ($class !== $expectedClass && !is_subclass_of($class, $expectedClass)) {
+            throw new InvalidArgumentException("Class {$class} must extend " . $expectedClass);
+        }
+
+        return $class;
     }
 }

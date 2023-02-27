@@ -1,7 +1,23 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class CheckableType extends FormFieldsView
+class CheckableType extends FormField
 {
+
+    const DEFAULT_VALUE = 1;
+
+    /**
+     * @inheritdoc
+     */
+    protected $valueProperty = 'checked';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isValidValue($value)
+    {
+        return $value !== null;
+    }
+
 
     protected function getTemplate()
     {

@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-use Kris\LaravelFormBuilder\Form;
+use Momenoor\FormBuilder\Form;
 
 class ChildFormType extends ParentType {
 

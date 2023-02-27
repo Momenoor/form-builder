@@ -6,7 +6,7 @@ use \Validator;
 use \Redirect;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
-class FormValidator extends FormView
+class FormValidator extends Form
 {
 
     public $rows = [];
@@ -84,7 +84,7 @@ class FormValidator extends FormView
 
     public function validateAndRedirectBack()
     {
-        return Redirect::back()->withErrors($this->validate())->withInput($this->formHelper->getRequest()->all());
+        return redirect()->back()->withErrors($this->validate())->withInput($this->formHelper->getRequest()->all());
 
     }
 

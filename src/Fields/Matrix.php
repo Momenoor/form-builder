@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class Matrix extends FormFieldsView {
+class Matrix extends FormField {
 
     protected function getTemplate()
     {

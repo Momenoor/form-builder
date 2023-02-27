@@ -1,6 +1,6 @@
 <?php namespace Momenoor\FormBuilder\Fields;
 
-class DatePicker extends FormFieldsView {
+class DatePicker extends FormField {
 
     protected function getTemplate()
     {
