@@ -15,19 +15,19 @@ return [
     'moxy_manager_path'  => '/assets/moxiemanager/plugin.min.js',
     'api_google_map_key' => env('GOOGLE_MAP_JS_API_KEY'),
     // Templates
-    'form'          => 'laravel-form-builder::form',
-    'text'          => 'laravel-form-builder::text',
-    'textarea'      => 'laravel-form-builder::textarea',
-    'button'        => 'laravel-form-builder::button',
-    'buttongroup'   => 'laravel-form-builder::buttongroup',
-    'radio'         => 'laravel-form-builder::radio',
-    'checkbox'      => 'laravel-form-builder::checkbox',
-    'select'        => 'laravel-form-builder::select',
-    'choice'        => 'laravel-form-builder::choice',
-    'repeated'      => 'laravel-form-builder::repeated',
-    'child_form'    => 'laravel-form-builder::child_form',
-    'collection'    => 'laravel-form-builder::collection',
-    'static'        => 'laravel-form-builder::static',
+    'form'          => 'form-builder::form.partial.form',
+    'text'          => 'form-builder::form.partial.text',
+    'textarea'      => 'form-builder::form.partial.textarea',
+    'button'        => 'form-builder::form.partial.button',
+    'buttongroup'   => 'form-builder::form.partial.buttongroup',
+    'radio'         => 'form-builder::form.partial.radio',
+    'checkbox'      => 'form-builder::form.partial.checkbox',
+    'select'        => 'form-builder::form.partial.select',
+    'choice'        => 'form-builder::form.partial.choice',
+    'repeated'      => 'form-builder::form.partial.repeated',
+    'child_form'    => 'form-builder::form.partial.child_form',
+    'collection'    => 'form-builder::form.partial.collection',
+    'static'        => 'form-builder::form.partial.static',
     'tinymce'            => 'form-builder::form.partial.tinymce',
     'tag'                => 'form-builder::form.partial.tag',
     'choice_area'        => 'form-builder::form.partial.choice_area',
@@ -72,13 +72,13 @@ return [
     // Templates
 
 
-    // Remove the laravel-form-builder:: prefix above when using template_prefix
+    // Remove the form-builder:: prefix above when using template_prefix
     'template_prefix'   => '',
 
     'default_namespace' => '',
 
-    'plain_form_class' => \Kris\LaravelFormBuilder\Form::class,
-    'form_builder_class' => \Kris\LaravelFormBuilder\FormBuilder::class,
-    'form_helper_class' => \Kris\LaravelFormBuilder\FormHelper::class,
+    'plain_form_class' => \Momenoor\FormBuilder\Form::class,
+    'form_builder_class' => \Momenoor\FormBuilder\FormBuilder::class,
+    'form_helper_class' => \Momenoor\FormBuilder\FormHelper::class,
 
 ];

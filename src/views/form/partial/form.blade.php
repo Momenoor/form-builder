@@ -13,9 +13,8 @@ if (empty($formOptions['url'])) {
     @endif
 @endif
 @if ($form->hasRows())
-{{ $form->rows }}
-    @foreach ($form->rows as $row)
-        {{ dd($row) }}
+    @foreach ($form->getRows() as $row)
+        {{ $row->render() }}
     @endforeach
 @endif
 @if ($showFields)

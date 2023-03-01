@@ -1,8 +1,10 @@
 <?php
+
 namespace Momenoor\FormBuilder;
 
 
-class Field{
+class Field
+{
 
 
     const TEXT = 'text';
@@ -40,4 +42,7 @@ class Field{
     const TINYMCE = 'tinymce';
     const UPLOAD = 'upload';
     const ADDRESS_PICKER = 'address_picker';
+
+    const ROW = 'row';
+    const COLUMN = 'column';
 }

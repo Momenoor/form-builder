@@ -80,7 +80,11 @@ class FormHelper
         'entity' => 'EntityType',
         'collection' => 'CollectionType',
         'repeated' => 'RepeatedType',
-        'static' => 'StaticType'
+        'static' => 'StaticType',
+        'address_picker' => 'AddressPicker',
+        'choice_ajax' => 'ChoiceAjax',
+/*         'row' => 'FormRow',
+        'column' => 'FormColumn', */
     ];
 
     /**
@@ -500,7 +504,7 @@ class FormHelper
         if (in_array($name, static::$reservedFieldNames)) {
             throw new \InvalidArgumentException(
                 "Field name [{$name}] in form [{$className}] is a reserved word. Please use a different field name." .
-                "\nList of all reserved words: " . join(', ', static::$reservedFieldNames)
+                    "\nList of all reserved words: " . join(', ', static::$reservedFieldNames)
             );
         }
 

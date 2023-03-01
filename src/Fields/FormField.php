@@ -1,31 +1,14 @@
-<?php namespace Momenoor\FormBuilder\Fields;
+<?php
+
+namespace Momenoor\FormBuilder\Fields;
 
 use Illuminate\Support\Arr;
 use Momenoor\FormBuilder\Form;
 use Momenoor\FormBuilder\Rules;
 
-abstract class FormField {
+abstract class FormField
+{
 
-    /**
-     * Name of the field.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * Type of the field.
-     *
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * All options for the field.
-     *
-     * @var array
-     */
-    protected $options = [];
 
     /**
      * Is field rendered.
@@ -33,11 +16,6 @@ abstract class FormField {
      * @var bool
      */
     protected $rendered = false;
-
-    /**
-     * @var Form
-     */
-    protected $parent;
 
     /**
      * @var string
@@ -102,11 +80,12 @@ abstract class FormField {
      * @param Form $parent
      * @param array $options
      */
-    public function __construct($name, $type, Form $parent, array $options = [])
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->parent = $parent;
+    public function __construct(
+        protected string $name,
+        protected string $type,
+        protected Form $parent,
+        protected array $options = []
+    ) {
         $this->formHelper = $this->parent->getFormHelper();
         $this->setTemplate();
         $this->setDefaultOptions($options);
@@ -306,7 +285,7 @@ abstract class FormField {
         }
 
         if ($this->parent->clientValidationEnabled() && $parsedRules) {
-            foreach($parsedRules as $rule => $param){
+            foreach ($parsedRules as $rule => $param) {
                 $this->setOption('attr.' . $rule, $param);
             }
         }
@@ -1023,8 +1002,7 @@ abstract class FormField {
         $this->rendered = true;
         $options        = $this->prepareOptions($options);
 
-        if (!$this->needsLabel($options))
-        {
+        if (!$this->needsLabel($options)) {
             $showLabel = false;
         }
 
@@ -1037,7 +1015,8 @@ abstract class FormField {
         }
 
         return $this->formHelper->getView()->make(
-            $this->template, [
+            $this->template,
+            [
                 'name'      => $this->name,
                 'type'      => $this->type,
                 'options'   => $options,
@@ -1045,7 +1024,8 @@ abstract class FormField {
                 'showLabel' => $showLabel,
                 'showField' => $showField,
                 'showError' => $showError
-            ])
+            ]
+        )
             ->render();
     }
 }

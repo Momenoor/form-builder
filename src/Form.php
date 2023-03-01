@@ -1,8 +1,9 @@
-<?php namespace Momenoor\FormBuilder;
+<?php
+
+namespace Momenoor\FormBuilder;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Contracts\Validation\Factory as ValidatorFactory;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -11,15 +12,35 @@ use Momenoor\FormBuilder\Events\AfterFormValidation;
 use Momenoor\FormBuilder\Events\BeforeFormValidation;
 use Momenoor\FormBuilder\Fields\FormField;
 use Momenoor\FormBuilder\Filters\FilterResolver;
+use Closure;
+use \Redirect;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
+use Illuminate\Support\Facades\Validator;
 
-class Form  {
+class Form
+{
 
-/**
+    /**
      * All fields that are added.
      *
      * @var array
      */
     protected $fields = [];
+
+    /**
+     * All rows that are added.
+     *
+     * @var array
+     */
+    protected $rows = [];
+
+
+    /**
+     * All rows' columns that are added.
+     *
+     * @var array
+     */
+    protected $columns = [];
 
     /**
      * Model to use.
@@ -44,7 +65,7 @@ class Form  {
      * @var array
      */
     protected $formOptions = [
-        'method' => 'GET',
+        'method' => 'POST',
         'url' => null,
         'attr' => [],
     ];
@@ -147,6 +168,11 @@ class Form  {
      */
     protected $errorBag = 'default';
 
+    public static $rules = [];
+    public static $rules_update = null;
+    protected $hasError = false;
+    protected $validation = null;
+
     /**
      * Build the form.
      *
@@ -185,12 +211,102 @@ class Form  {
      */
     protected function isPlain()
     {
-        if($this->formBuilder === null) {
+        if ($this->formBuilder === null) {
             throw new \RuntimeException('FormBuilder is not set');
         }
 
         return static::class === $this->formBuilder->getFormClass();
     }
+
+    public function getRows(){
+        return $this->rows;
+    }
+    protected function addRow($name, array $options = []): Form
+    {
+        $row = new FormRow($name, $options, $this->formHelper, $this);
+        $this->rows[$row->getRealName()] = $row;
+        return $this;
+    }
+
+    public function validateAndRedirectBack()
+    {
+        return redirect()->back()->withErrors($this->validate())->withInput($this->getRequest()->all());
+    }
+
+
+    // ------------------------------------------------------------------------------------------------
+
+    protected function afterValidate(ValidatorContract $validator, array $inputs)
+    {
+        return;
+    }
+
+    // ------------------------------------------------------------------------------------------------
+
+    public function hasError()
+    {
+
+        if ($this->validation == null) {
+            $this->validate();
+        }
+
+        return $this->hasError;
+    }
+
+
+    // ------------------------------------------------------------------------------------------------
+
+    public function addDefaultActions()
+    {
+        $this->add(
+            'submit',
+            'submit',
+            [
+                'label' => trans('form-builder::form.save'),
+                'attr' => [
+                    'class' => 'btn btn-success'
+                ],
+            ],
+            false,
+            true
+        )
+            ->add(
+                'back',
+                'button',
+                [
+                    'label' => trans('form-builder::form.back'),
+                    'attr' => [
+                        'class' => 'btn btn-light',
+                        'onclick' => 'window.history.back()'
+                    ],
+                ],
+                false,
+                true
+            );
+    }
+
+
+    // ------------------------------------------------------------------------------------------------
+
+    protected function getGeneralRules()
+    {
+
+        return static::$rules;
+    }
+
+    // ------------------------------------------------------------------------------------------------
+
+    protected function getUpdateRules()
+    {
+
+        return static::$rules_update;
+    }
+
+    public function hasRows()
+    {
+        return (count($this->rows) > 0);
+    }
+
 
     /**
      * Create the FormField object.
@@ -219,28 +335,35 @@ class Form  {
     public function add($name, $type = 'text', array $options = [], $modify = false, $noOveride = false)
     {
 
+        $defaultClass = $this->formHelper->getConfig('defaults.field_class') . ' ';
+        if (empty($options['attr']['class'])) {
+            $options['attr']['class'] = '';
+        }
 
-        if (!isset($options['noInEditView']))
-        {
+        if (empty($noOveride)) {
+            $options['attr']['class'] = $defaultClass . ' ' . $options['attr']['class'] . ' ';
+        }
+
+        if (!empty($options) && isset($options['validation'])) {
+
+            $options['attr']['class'] .= ' validate[' . $options['validation'] . ']' . ' ';
+            unset($options['validation']);
+        }
+        if (!isset($options['noInEditView'])) {
             $options['noInEditView'] = false;
         }
 
 
-        if (!empty($this->formOptions) && !empty($this->formOptions['do_not_display_'.$name]) && $this->formOptions['do_not_display_'.$name] === true)
-        {
+        if (!empty($this->formOptions) && !empty($this->formOptions['do_not_display_' . $name]) && $this->formOptions['do_not_display_' . $name] === true) {
             $type = 'hidden';
 
-            if (!empty($options) && !empty($options['selected']))
-            {
+            if (!empty($options) && !empty($options['selected'])) {
                 $options['default_value'] = $options['selected'];
             }
-
         }
 
-        if ($type == 'choice' && !isset($options['selected']))
-        {
-            if (isset($this->model->{$name}))
-            {
+        if ($type == 'choice' && !isset($options['selected'])) {
+            if (isset($this->model->{$name})) {
                 $options['selected'] = $this->model->{$name};
             }
         }
@@ -256,7 +379,7 @@ class Form  {
         return $this;
     }
 
-     /**
+    /**
      * Add a FormField to the form's fields.
      *
      * @param FormField $field
@@ -1047,7 +1170,8 @@ class Form  {
         }
 
         return array_merge(
-            $formAttributes, Arr::only($formOptions, $reserved)
+            $formAttributes,
+            Arr::only($formOptions, $reserved)
         );
     }
 
@@ -1091,7 +1215,7 @@ class Form  {
     protected function preventDuplicate($name)
     {
         if ($this->has($name)) {
-            throw new \InvalidArgumentException('Field ['.$name.'] already exists in the form '.get_class($this));
+            throw new \InvalidArgumentException('Field [' . $name . '] already exists in the form ' . get_class($this));
         }
     }
 
@@ -1270,6 +1394,7 @@ class Form  {
      */
     public function validate($validationRules = [], $messages = [])
     {
+
         $fieldRules = $this->formHelper->mergeFieldsRules($this->fields);
         $rules = array_merge($fieldRules->getRules(), $validationRules);
         $messages = array_merge($fieldRules->getMessages(), $messages);
@@ -1290,9 +1415,13 @@ class Form  {
      */
     public function getRules($overrideRules = [])
     {
+        $key = !empty($this->model) ? $this->getRequest()->get($this->model->getKeyName()) : null;
+
+        $rules =  ($this->getUpdateRules() == null || empty($key)) ? $this->getGeneralRules() : $this->getUpdateRules() ?? [];
+
         $fieldRules = $this->formHelper->mergeFieldsRules($this->fields);
 
-        return array_merge($fieldRules->getRules(), $overrideRules);
+        return array_merge($fieldRules->getRules(), $overrideRules, $rules);
     }
 
     /**
@@ -1304,7 +1433,7 @@ class Form  {
      */
     public function redirectIfNotValid($destination = null)
     {
-        if (! $this->isValid()) {
+        if (!$this->isValid()) {
             $response = redirect($destination);
 
             if (is_null($destination)) {
@@ -1427,7 +1556,7 @@ class Form  {
      */
     protected function fieldDoesNotExist($name)
     {
-        throw new \InvalidArgumentException('Field ['.$name.'] does not exist in '.get_class($this));
+        throw new \InvalidArgumentException('Field [' . $name . '] does not exist in ' . get_class($this));
     }
 
     /**

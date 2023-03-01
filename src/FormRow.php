@@ -1,4 +1,5 @@
 <?php
+
 namespace Momenoor\FormBuilder;
 
 use Momenoor\FormBuilder\FormHelper;
@@ -21,36 +22,37 @@ class FormRow
     protected $template;
 
     public function __construct(
-        protected $name,
-        protected $options = [],
+        protected string $name,
+        protected array $options = [],
         protected FormHelper $formHelper,
-        protected FormValidator $parent,
-    )
+        protected Form $parent,
+    ) {
+    }
+
+    public function addField($name, $columnSize, $options)
     {
-
     }
 
-    public function addField($name, $columnSize, $options){
-
-    }
-
-    public function render($options = [], $showColumns = true, )
+    public function render($options = [], $showColumns = true,)
     {
         if ($showColumns) {
             $this->rendered = true;
         }
 
         $this->prepareOptions($options);
-
-
     }
 
     private function allDefaults()
     {
         return [
-            'class' => 'col',
+            'class' => 'row',
             'name' => null,
         ];
+    }
+
+    public function getRealName(): string
+    {
+        return $this->getOption('real_name', $this->name);
     }
 
     private function prepareOptions($options = [])
@@ -82,5 +84,4 @@ class FormRow
 
         return Arr::forget($this->options, $option);
     }
-
 }
