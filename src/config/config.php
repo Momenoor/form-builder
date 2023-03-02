@@ -2,10 +2,10 @@
 
 return [
     'defaults'           => [
-        'wrapper_class'       => 'form-group',
+        'wrapper_class'       => 'form-group mb-5',
         'wrapper_error_class' => 'has-error',
-        'label_class'         => 'control-label',
-        'field_class'         => 'form-control',
+        'label_class'         => 'form-label fs-6 fw-bolder text-gray-700 mb-3',
+        'field_class'         => ' form-control form-control-solid',
         'error_class'         => 'help-block text-danger',
         'field_error_class'   => '',
         'help_block_class'    => 'help-block',
@@ -38,6 +38,7 @@ return [
     'matrix'             => 'form-builder::form.partial.matrix',
     'choice_area_ajax'   => 'form-builder::form.partial.choice_area_ajax',
     'folder_chooser'     => 'form-builder::form.partial.folder_chooser',
+    'row'                => 'form-builder::form.partial.row',
 
     'custom_fields' => [
         'button'                   => 'Momenoor\FormBuilder\Fields\ButtonType',

@@ -3,10 +3,8 @@
     <div {!! $options['wrapperAttrs'] !!}  >
 @endif
     @if ($showLabel)
-        <?php $options['label_attr']['class'] .= ' col-md-3'; ?>
         {!! Form::label($name, $options['label'], $options['label_attr']) !!}
     @endif
-    <div class="col-md-4">
         @if ($showField)
             @if (isset($noEdit) and ($noEdit === true))
                 {!! $options['default_value'] !!}
@@ -62,7 +60,6 @@
         @if (! empty($options['help']))
             <span class="help-block">{!! $options['help'] !!} </span>
         @endif
-    </div>
 @if ($showLabel and $showField and ! $options['is_child'])
     </div>
 @endif

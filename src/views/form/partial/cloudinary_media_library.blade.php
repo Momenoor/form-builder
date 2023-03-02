@@ -4,11 +4,8 @@
         @endif
 
         @if ($showLabel)
-            <?php $options['label_attr']['class'] .= ' col-md-3'; ?>
             {!! Form::label($name, $options['label'], $options['label_attr']) !!}
         @endif
-
-        <div class="col-md-4">
 
             @if ($showField)
                 @if(isset($noEdit) and $noEdit === true)
@@ -56,8 +53,6 @@
                 <span class="help-block">{!!$options['help']!!} </span>
             @endif
 
-
-        </div>
         @if ($showLabel && $showField && !$options['is_child'])
     </div>
 @endif

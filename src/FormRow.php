@@ -19,34 +19,58 @@ class FormRow
     /**
      * @var string
      */
-    protected $template;
+
+    protected $fields;
 
     public function __construct(
         protected string $name,
         protected array $options = [],
         protected FormHelper $formHelper,
         protected Form $parent,
+        protected $template = ''
     ) {
+        $this->template = $this->formHelper->getConfig('row');
+        $this->options = $this->formHelper->mergeOptions($this->options, $this->allDefaults());
     }
 
-    public function addField($name, $columnSize, $options)
+    public function addToFields($key, $field)
     {
+        $this->fields[$key] = $field;
     }
 
-    public function render($options = [], $showColumns = true,)
+    public function addField($name, $type = 'text', array $options = [], $modify = false, $noOveride = false)
     {
-        if ($showColumns) {
-            $this->rendered = true;
+        if ($options['col']) {
+            $options['wrapper'] = ['class' => $this->formHelper->getConfig('defaults.wrapper_class') . ' col-' . $options['col'] . ' ' . (($options['wrapper']['class']) ?? '')];
         }
+        $this->parent->add($name, $type, $options, $modify, $noOveride, $this->name);
+
+        return $this;
+    }
+
+    public function render($options = [])
+    {
+        $this->rendered = true;
 
         $this->prepareOptions($options);
+
+        return  $this->formHelper->getView()
+            ->make(
+                $this->getTemplate(),
+                [
+                    'attributes' => $this->getOption('attr'),
+                    'fields'     => $this->fields,
+                    'showFields' => true,
+                ]
+            )
+            ->render();
     }
 
     private function allDefaults()
     {
         return [
             'class' => 'row',
-            'name' => null,
+            'name' => $this->name,
         ];
     }
 
@@ -55,14 +79,16 @@ class FormRow
         return $this->getOption('real_name', $this->name);
     }
 
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
     private function prepareOptions($options = [])
     {
 
-        $this->options = $this->formHelper->mergeOptions($options, $this->allDefaults());
+        $this->options = $this->formHelper->mergeOptions($options, $this->options);
 
-        $columns = $this->getOption('columns', $this->options);
-        $this->removeOption('columns');
-        dd($columns);
         $this->setOption('attr', $this->formHelper->prepareAttributes($this->options));
     }
 
@@ -83,5 +109,10 @@ class FormRow
     {
 
         return Arr::forget($this->options, $option);
+    }
+
+    public function actionRow()
+    {
+        return $this->name === 'action';
     }
 }

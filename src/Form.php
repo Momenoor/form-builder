@@ -218,13 +218,22 @@ class Form
         return static::class === $this->formBuilder->getFormClass();
     }
 
-    public function getRows(){
+    public function getRows()
+    {
         return $this->rows;
     }
-    protected function addRow($name, array $options = []): Form
+
+    public function getRow($name)
+    {
+        return $this->rows[$name];
+    }
+    protected function addRow($name, array $options = [], Closure $callback = null): Form
     {
         $row = new FormRow($name, $options, $this->formHelper, $this);
         $this->rows[$row->getRealName()] = $row;
+        if ($callback) {
+            $callback($row);
+        }
         return $this;
     }
 
@@ -258,14 +267,16 @@ class Form
 
     public function addDefaultActions()
     {
+        $this->addRow('action',['class'=>'text-center']);
         $this->add(
             'submit',
             'submit',
             [
                 'label' => trans('form-builder::form.save'),
                 'attr' => [
-                    'class' => 'btn btn-success'
+                    'class' => 'btn btn-success col me-5 ms-3'
                 ],
+                'row' => 'action',
             ],
             false,
             true
@@ -276,9 +287,10 @@ class Form
                 [
                     'label' => trans('form-builder::form.back'),
                     'attr' => [
-                        'class' => 'btn btn-light',
+                        'class' => 'btn btn-light col',
                         'onclick' => 'window.history.back()'
                     ],
+                    'row' => 'action',
                 ],
                 false,
                 true
@@ -307,6 +319,11 @@ class Form
         return (count($this->rows) > 0);
     }
 
+    public function hasRow($row)
+    {
+        return Arr::get($this->rows, $row);
+    }
+
 
     /**
      * Create the FormField object.
@@ -332,7 +349,7 @@ class Form
     }
 
 
-    public function add($name, $type = 'text', array $options = [], $modify = false, $noOveride = false)
+    public function add($name, $type = 'text', array $options = [], $modify = false, $noOveride = false, $row = null)
     {
 
         $defaultClass = $this->formHelper->getConfig('defaults.field_class') . ' ';
@@ -351,6 +368,10 @@ class Form
         }
         if (!isset($options['noInEditView'])) {
             $options['noInEditView'] = false;
+        }
+
+        if (!empty($options['col'])) {
+            $options['wrapper'] = ['class' => $this->formHelper->getConfig('defaults.wrapper_class') . ' col-' . $options['col'] . ' ' . (($options['wrapper']['class']) ?? '')];
         }
 
 
@@ -374,7 +395,7 @@ class Form
             return $this;
         }
 
-        $this->addField($this->makeField($name, $type, $options), $modify);
+        $this->addField($this->makeField($name, $type, $options), $modify, $row);
 
         return $this;
     }
@@ -385,7 +406,7 @@ class Form
      * @param FormField $field
      * @return $this
      */
-    protected function addField(FormField $field, $modify = false)
+    protected function addField(FormField $field, $modify = false, $row = null)
     {
         if (!$modify && !$this->rebuilding) {
             $this->preventDuplicate($field->getRealName());
@@ -396,7 +417,24 @@ class Form
             $this->formOptions['files'] = true;
         }
 
-        $this->fields[$field->getRealName()] = $field;
+        if (empty($row) && empty($field->getOption('row'))) {
+
+            $this->fields[$field->getRealName()] = $field;
+            return $this;
+        }
+
+        $rowName = $row ?: $field->getOption('row');
+
+        if ($this->hasRow($rowName)) {
+
+            ($this->rows[$rowName])->addToFields($field->getRealName(), $field);
+            return $this;
+        }
+
+        $this->addRow('defaultRow', [], function ($row) use ($field) {
+
+            $row->addToFields($field->getRealName(), $field);
+        });
 
         return $this;
     }
@@ -1139,7 +1177,6 @@ class Form
         $formOptions = $this->buildFormOptionsForFormBuilder(
             $this->formHelper->mergeOptions($this->formOptions, $options)
         );
-
         $this->setupNamedModel();
 
         return $this->formHelper->getView()
