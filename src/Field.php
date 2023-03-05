@@ -43,6 +43,7 @@ class Field
     const UPLOAD = 'upload';
     const ADDRESS_PICKER = 'address_picker';
 
+    const SELECT2 = 'select2';
     const ROW = 'row';
     const COLUMN = 'column';
 }

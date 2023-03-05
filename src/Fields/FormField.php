@@ -3,6 +3,9 @@
 namespace Momenoor\FormBuilder\Fields;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Momenoor\FormBuilder\Filters\Exception\FilterAlreadyBindedException;
+use Momenoor\FormBuilder\Filters\FilterResolver;
 use Momenoor\FormBuilder\Form;
 use Momenoor\FormBuilder\Rules;
 
@@ -148,6 +151,7 @@ abstract class FormField
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true)
     {
         $this->prepareOptions($options);
+        $this->translateOptions();
         $value = $this->getValue();
         $defaultValue = $this->getDefaultValue();
 
@@ -226,6 +230,26 @@ abstract class FormField
         return $this->formHelper->transformToDotSyntax($key);
     }
 
+    protected function translateOptions()
+    {
+        $languageName = $this->getOption('language_name');
+        $choices = $this->getOption('choices');
+        $this->removeOption('choices');
+        if (!empty($languageName) && !empty($choices)) {
+            foreach ($choices as $key => $choice) {
+                $choices[$key] = trans($languageName . '.' . $choice);
+            }
+
+            $this->setOption('choices', $choices);
+        }
+    }
+
+    private function removeOption($option)
+    {
+
+        return Arr::forget($this->options, $option);
+    }
+
     /**
      * Prepare options for rendering.
      *
@@ -238,11 +262,9 @@ abstract class FormField
 
         $this->options = $this->prepareRules($options);
         $this->options = $helper->mergeOptions($this->options, $options);
-
         $rulesParser = $helper->createRulesParser($this);
         $rules = $this->getOption('rules');
         $parsedRules = $rules ? $rulesParser->parse($rules) : [];
-
 
         foreach (['attr', 'label_attr', 'wrapper'] as $appendable) {
             // Append values to the 'class' attribute
@@ -270,7 +292,7 @@ abstract class FormField
             $lblClass = $this->getOption('label_attr.class', '');
             $requiredClass = $this->getConfig('defaults.required_class', 'required');
 
-            if (!\Str::contains($lblClass, $requiredClass)) {
+            if (!Str::contains($lblClass, $requiredClass)) {
                 $lblClass .= ' ' . $requiredClass;
                 $this->setOption('label_attr.class', $lblClass);
             }
@@ -299,8 +321,8 @@ abstract class FormField
                 $helper->prepareAttributes($this->getOption('help_block.attr'))
             );
         }
-
         return $this->options;
+
     }
 
     /**
@@ -594,7 +616,7 @@ abstract class FormField
             $fieldErrorClass = $this->getConfig('defaults.field_error_class');
             $fieldClass = $this->getOption('attr.class');
 
-            if ($fieldErrorClass && !\Str::contains($fieldClass, $fieldErrorClass)) {
+            if ($fieldErrorClass && !Str::contains($fieldClass, $fieldErrorClass)) {
                 $fieldClass .= ' ' . $fieldErrorClass;
                 $this->setOption('attr.class', $fieldClass);
             }
@@ -858,7 +880,7 @@ abstract class FormField
     }
 
     /**
-     * @param  string|FilterInterface $filter
+     * @param  string|FilterInteerface $filter
      *
      * @return \Momenoor\FormBuilder\Fields\FormField
      *

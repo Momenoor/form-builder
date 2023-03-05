@@ -83,7 +83,8 @@ class FormHelper
         'static' => 'StaticType',
         'address_picker' => 'AddressPicker',
         'choice_ajax' => 'ChoiceAjax',
-/*         'row' => 'FormRow',
+        'select2' => 'Select2Type',
+        /*         'row' => 'FormRow',
         'column' => 'FormColumn', */
     ];
 
@@ -278,6 +279,7 @@ class FormHelper
      */
     public function formatLabel($name)
     {
+
         if (!$name) {
             return null;
         }

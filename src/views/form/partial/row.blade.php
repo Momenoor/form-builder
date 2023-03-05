@@ -1,3 +1,6 @@
+@if ($showWrapper)
+    {!! $wrapper['start'] !!}
+@endif
 <div {!! $attributes !!}>
     @if ($showFields)
         @if ($fields)
@@ -23,3 +26,6 @@
         @endif
     @endif
 </div>
+@if ($showWrapper)
+    {!! $wrapper['end'] !!}
+@endif

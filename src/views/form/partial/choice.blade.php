@@ -18,7 +18,7 @@
 
 @if ($showError && isset($errors))
     {!! $errors->first(
-        array_get($options, 'real_name', $name),
+        data_get($options, 'real_name', $name),
         '<div ' . $options['errorAttrs'] . '>:message</div>',
     ) !!}
 @endif

@@ -5,7 +5,7 @@ return [
         'wrapper_class'       => 'form-group mb-5',
         'wrapper_error_class' => 'has-error',
         'label_class'         => 'form-label fs-6 fw-bolder text-gray-700 mb-3',
-        'field_class'         => ' form-control form-control-solid',
+        'field_class'         => 'form-control form-control-solid',
         'error_class'         => 'help-block text-danger',
         'field_error_class'   => '',
         'help_block_class'    => 'help-block',
@@ -39,6 +39,7 @@ return [
     'choice_area_ajax'   => 'form-builder::form.partial.choice_area_ajax',
     'folder_chooser'     => 'form-builder::form.partial.folder_chooser',
     'row'                => 'form-builder::form.partial.row',
+    'select2'                => 'form-builder::form.partial.select2',
 
     'custom_fields' => [
         'button'                   => 'Momenoor\FormBuilder\Fields\ButtonType',
@@ -81,5 +82,7 @@ return [
     'plain_form_class' => \Momenoor\FormBuilder\Form::class,
     'form_builder_class' => \Momenoor\FormBuilder\FormBuilder::class,
     'form_helper_class' => \Momenoor\FormBuilder\FormHelper::class,
+
+    'translator_prefix' => 'app',
 
 ];

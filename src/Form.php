@@ -267,14 +267,17 @@ class Form
 
     public function addDefaultActions()
     {
-        $this->addRow('action',['class'=>'text-center']);
+        $this->addRow('action', ['class_append' => 'col-12'], function ($row) {
+            $row->addWrapper('div', ['class' => 'row']);
+            $row->removeClass('row');
+        });
         $this->add(
             'submit',
             'submit',
             [
                 'label' => trans('form-builder::form.save'),
                 'attr' => [
-                    'class' => 'btn btn-success col me-5 ms-3'
+                    'class' => 'btn btn-success me-5'
                 ],
                 'row' => 'action',
             ],
@@ -287,7 +290,7 @@ class Form
                 [
                     'label' => trans('form-builder::form.back'),
                     'attr' => [
-                        'class' => 'btn btn-light col',
+                        'class' => 'btn btn-light',
                         'onclick' => 'window.history.back()'
                     ],
                     'row' => 'action',

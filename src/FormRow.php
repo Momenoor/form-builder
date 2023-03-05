@@ -15,24 +15,68 @@ class FormRow
      * @var bool
      */
     protected $rendered = false;
+    /**
+     * Field options.
+     *
+     * @var array
+     */
+    protected $options = [];
 
     /**
      * @var string
      */
 
     protected $fields;
+    /**
+     *
+     * @var string
+     */
+
+    protected $wrapper = [];
 
     public function __construct(
         protected string $name,
-        protected array $options = [],
+        array $options = [],
         protected FormHelper $formHelper,
         protected Form $parent,
         protected $template = ''
     ) {
         $this->template = $this->formHelper->getConfig('row');
-        $this->options = $this->formHelper->mergeOptions($this->options, $this->allDefaults());
+        $this->options = $this->formHelper->mergeOptions($options, $this->allDefaults());
+        $this->appendOptions();
     }
 
+    private function appendOptions()
+    {
+        $options = $this->options;
+        foreach ($options as $key => $option) {
+
+            if (!strpos($key, '_append')) {
+
+                continue;
+            }
+
+            $this->removeOption($key);
+            $key = str_replace('_append', '', $key);
+
+            if (!key_exists($key, $this->options)) {
+                continue;
+            }
+
+            $newOption = $this->getOption($key);
+            $this->removeOption($key);
+
+            if (is_array($newOption)) {
+                array_push($newOption, $option);
+            }
+
+            if (is_string($newOption)) {
+                $newOption .= ' ' . $option;
+            }
+
+            $this->setOption($key, $newOption);
+        }
+    }
     public function addToFields($key, $field)
     {
         $this->fields[$key] = $field;
@@ -40,7 +84,7 @@ class FormRow
 
     public function addField($name, $type = 'text', array $options = [], $modify = false, $noOveride = false)
     {
-        if ($options['col']) {
+        if (key_exists('col',$options)) {
             $options['wrapper'] = ['class' => $this->formHelper->getConfig('defaults.wrapper_class') . ' col-' . $options['col'] . ' ' . (($options['wrapper']['class']) ?? '')];
         }
         $this->parent->add($name, $type, $options, $modify, $noOveride, $this->name);
@@ -48,12 +92,20 @@ class FormRow
         return $this;
     }
 
+    public function addWrapper($tag = 'div', $options = [])
+    {
+        $this->wrapper['start'] = '<' . $tag . ' ' . $this->formHelper->prepareAttributes($options) . '>';
+        $this->wrapper['end'] = '</' . $tag . '>';
+    }
+
     public function render($options = [])
     {
+        $showWrapper = false;
         $this->rendered = true;
-
         $this->prepareOptions($options);
-
+        if (!empty($this->wrapper)) {
+            $showWrapper = true;
+        }
         return  $this->formHelper->getView()
             ->make(
                 $this->getTemplate(),
@@ -61,6 +113,8 @@ class FormRow
                     'attributes' => $this->getOption('attr'),
                     'fields'     => $this->fields,
                     'showFields' => true,
+                    'showWrapper' => $showWrapper,
+                    'wrapper' => $this->wrapper,
                 ]
             )
             ->render();
@@ -84,7 +138,7 @@ class FormRow
         return $this->template;
     }
 
-    private function prepareOptions($options = [])
+    private function prepareOptions($options = []): void
     {
 
         $this->options = $this->formHelper->mergeOptions($options, $this->options);
@@ -114,5 +168,23 @@ class FormRow
     public function actionRow()
     {
         return $this->name === 'action';
+    }
+
+    public function removeClass(string $className = 'row')
+    {
+        $class = $this->getOption('class');
+
+        if (is_array($class)) {
+            foreach ($class as $key => $value) {
+                if ($value == $className) {
+                    unset($class[$key]);
+                }
+            }
+        }
+        if (is_string($class)) {
+
+            $class = str_replace($className, '', $class);
+        }
+        $this->setOption('class', $class);
     }
 }
