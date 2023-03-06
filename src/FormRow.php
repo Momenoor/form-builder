@@ -84,9 +84,9 @@ class FormRow
 
     public function addField($name, $type = 'text', array $options = [], $modify = false, $noOveride = false)
     {
-        if (key_exists('col',$options)) {
+        /* if (key_exists('col',$options)) {
             $options['wrapper'] = ['class' => $this->formHelper->getConfig('defaults.wrapper_class') . ' col-' . $options['col'] . ' ' . (($options['wrapper']['class']) ?? '')];
-        }
+        } */
         $this->parent->add($name, $type, $options, $modify, $noOveride, $this->name);
 
         return $this;

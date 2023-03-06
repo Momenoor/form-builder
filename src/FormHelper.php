@@ -84,6 +84,7 @@ class FormHelper
         'address_picker' => 'AddressPicker',
         'choice_ajax' => 'ChoiceAjax',
         'select2' => 'Select2Type',
+        'switchery' => 'SwitcheryType',
         /*         'row' => 'FormRow',
         'column' => 'FormColumn', */
     ];

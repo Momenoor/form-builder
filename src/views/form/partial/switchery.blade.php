@@ -18,21 +18,23 @@
 @else
     @if ($showLabel and $showField and !$options['is_child'])
         <div {!! $options['wrapperAttrs'] !!}>
-            <label class="col-md-3"></label>
+            <label class="col-md-3">
+                @if ($showLabel)
+                    @if ($options['is_child'])
+                        <label {!! $options['labelAttrs'] !!}>{!! $options['label'] !!}</label>
+                    @else
+                        {!! Form::label($name, $options['label'], $options['label_attr']) !!}
+                    @endif
+                @endif
+            </label>
             <div class="col-md-9">
     @endif
-
-    @if ($showField)
-        {!! Form::checkbox($name, $options['default_value'], $options['checked'], $options['attr']) !!}
-    @endif
-
-    @if ($showLabel)
-        @if ($options['is_child'])
-            <label {!! $options['labelAttrs'] !!}>{!! $options['label'] !!}</label>
-        @else
-            {!! Form::label($name, $options['label'], $options['label_attr']) !!}
+    <label class="form-check form-switch form-check-custom form-check-solid">
+        @if ($showField)
+            {!! Form::checkbox($name, $options['default_value'], $options['checked'], $options['attr']) !!}
         @endif
-    @endif
+    </label>
+
 
     @if ($showError and isset($errors))
         {!! $errors->first(data_get($options, 'real_name', $name), '<div ' . $options['errorAttrs'] . '>:message</div>') !!}

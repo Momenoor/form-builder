@@ -89,8 +89,10 @@ abstract class FormField
         protected Form $parent,
         protected array $options = []
     ) {
+
         $this->formHelper = $this->parent->getFormHelper();
         $this->setTemplate();
+
         $this->setDefaultOptions($options);
         $this->setupValue();
         $this->initFilters();
@@ -150,6 +152,7 @@ abstract class FormField
      */
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true)
     {
+
         $this->prepareOptions($options);
         $this->translateOptions();
         $value = $this->getValue();
@@ -233,7 +236,7 @@ abstract class FormField
     protected function translateOptions()
     {
         $languageName = $this->getOption('language_name');
-        $choices = $this->getOption('choices');
+        $choices = $this->getOption('choices') ?: [];
         $this->removeOption('choices');
         if (!empty($languageName) && !empty($choices)) {
             foreach ($choices as $key => $choice) {
@@ -259,7 +262,6 @@ abstract class FormField
     protected function prepareOptions(array $options = [])
     {
         $helper = $this->formHelper;
-
         $this->options = $this->prepareRules($options);
         $this->options = $helper->mergeOptions($this->options, $options);
         $rulesParser = $helper->createRulesParser($this);
@@ -322,7 +324,6 @@ abstract class FormField
             );
         }
         return $this->options;
-
     }
 
     /**
@@ -522,8 +523,7 @@ abstract class FormField
      *
      * @return array
      */
-    protected function getDefaults()
-    {
+    protected function getDefaults(){
         return [];
     }
 
@@ -638,12 +638,11 @@ abstract class FormField
      */
     protected function setDefaultOptions(array $options = [])
     {
+
         $this->options = $this->formHelper->mergeOptions($this->allDefaults(), $this->getDefaults());
         $this->options = $this->prepareOptions($options);
-
         $defaults = $this->setDefaultClasses($options);
         $this->options = $this->formHelper->mergeOptions($this->options, $defaults);
-
         $this->setupLabel();
     }
 

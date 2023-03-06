@@ -355,15 +355,6 @@ class Form
     public function add($name, $type = 'text', array $options = [], $modify = false, $noOveride = false, $row = null)
     {
 
-        $defaultClass = $this->formHelper->getConfig('defaults.field_class') . ' ';
-        if (empty($options['attr']['class'])) {
-            $options['attr']['class'] = '';
-        }
-
-        if (empty($noOveride)) {
-            $options['attr']['class'] = $defaultClass . ' ' . $options['attr']['class'] . ' ';
-        }
-
         if (!empty($options) && isset($options['validation'])) {
 
             $options['attr']['class'] .= ' validate[' . $options['validation'] . ']' . ' ';

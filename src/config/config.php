@@ -5,12 +5,13 @@ return [
         'wrapper_class'       => 'form-group mb-5',
         'wrapper_error_class' => 'has-error',
         'label_class'         => 'form-label fs-6 fw-bolder text-gray-700 mb-3',
-        'field_class'         => 'form-control form-control-solid',
+        'field_class'         => 'form-control form-control-solid text-start',
         'error_class'         => 'help-block text-danger',
         'field_error_class'   => '',
         'help_block_class'    => 'help-block',
         'required_class'      => 'required',
         'help_block_tag'      => 'p',
+
     ],
     'moxy_manager_path'  => '/assets/moxiemanager/plugin.min.js',
     'api_google_map_key' => env('GOOGLE_MAP_JS_API_KEY'),
@@ -40,6 +41,8 @@ return [
     'folder_chooser'     => 'form-builder::form.partial.folder_chooser',
     'row'                => 'form-builder::form.partial.row',
     'select2'                => 'form-builder::form.partial.select2',
+    'switchery'                => 'form-builder::form.partial.switchery',
+
 
     'custom_fields' => [
         'button'                   => 'Momenoor\FormBuilder\Fields\ButtonType',

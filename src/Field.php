@@ -46,4 +46,6 @@ class Field
     const SELECT2 = 'select2';
     const ROW = 'row';
     const COLUMN = 'column';
+
+    const SWITCHERY = 'switchery';
 }
