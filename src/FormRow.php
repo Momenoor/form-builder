@@ -36,7 +36,7 @@ class FormRow
 
     public function __construct(
         protected string $name,
-        array $options = [],
+        array $options,
         protected FormHelper $formHelper,
         protected Form $parent,
         protected $template = ''

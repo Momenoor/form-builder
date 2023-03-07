@@ -146,7 +146,7 @@ if (!function_exists('form_fields')) {
 
 if (!function_exists('form_widget_view')) {
 
-    function form_widget_view(\Momenoor\FormBuilder\Fields\FormField $formField, array $options = [])
+    function form_widget_view(FormField $formField, array $options = [])
     {
         return $formField->view($options, false, true, false);
     }
@@ -155,7 +155,7 @@ if (!function_exists('form_widget_view')) {
 
 if (!function_exists('form_view')) {
 
-    function form_view(\Momenoor\FormBuilder\Form $form, array $options = [])
+    function form_view(Form $form, array $options = [])
     {
         return $form->renderFormView($options);
     }
